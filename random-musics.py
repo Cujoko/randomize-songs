@@ -29,22 +29,27 @@ dirs_len = math.ceil(
 
 files_to_move_len = files_len
 
-for k in range(dirs_len):
-    dest_dir_fullpath = source_dir_fullpath.parent / f"{source_dir_name} # {k + 1}"
-    dest_dir_fullpath.mkdir(exist_ok=True)
+dir_lens = []
 
+for k in range(dirs_len):
     dirs_to_move_to = dirs_len - k
 
     files_to_move_to_dir_len = math.ceil(files_to_move_len / dirs_to_move_to)
 
-    for file_fullpath in random.sample(
-        [
-            x
-            for x in source_dir_fullpath.iterdir()
-            if x.is_file() and x.suffix == ".mp3"
-        ],
-        files_to_move_to_dir_len,
-    ):
-        shutil.move(file_fullpath, dest_dir_fullpath)
+    dir_lens.append(files_to_move_to_dir_len)
 
     files_to_move_len -= files_to_move_to_dir_len
+
+for file_fullpath in file_fullpaths:
+    max_dir_indices = [x for x, y in enumerate(dir_lens) if y == max(dir_lens)]
+
+    random_index = random.choice(max_dir_indices)
+
+    dest_dir_fullpath = (
+        source_dir_fullpath.parent / f"{source_dir_name} # {random_index + 1}"
+    )
+    dest_dir_fullpath.mkdir(exist_ok=True)
+
+    shutil.move(file_fullpath, dest_dir_fullpath)
+
+    dir_lens[random_index] = dir_lens[random_index] - 1
