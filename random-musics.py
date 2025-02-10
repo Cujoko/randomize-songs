@@ -40,16 +40,36 @@ for k in range(dirs_len):
 
     files_to_move_len -= files_to_move_to_dir_len
 
-for file_fullpath in file_fullpaths:
-    max_dir_indices = [x for x, y in enumerate(dir_lens) if y == max(dir_lens)]
+artists_dir_lens = {}
 
-    random_index = random.choice(max_dir_indices)
+for file_fullpath in file_fullpaths:
+    artist = file_fullpath.stem.split(" - ")[0]
+
+    if artist not in artists_dir_lens:
+        artists_dir_lens[artist] = {dir_indices: 0 for dir_indices in range(dirs_len)}
+
+    artist_dir_lens: dict = artists_dir_lens[artist]
+
+    artist_dir_lens_in_use = {
+        index: artist_dir_len
+        for index, artist_dir_len in artist_dir_lens.items()
+        if dir_lens[index] > 0
+    }
+
+    min_len_dir_indices = [
+        index
+        for index, artist_dir_len in artist_dir_lens_in_use.items()
+        if artist_dir_len == min(artist_dir_lens_in_use.values())
+    ]
+
+    random_dir_index = random.choice(min_len_dir_indices)
 
     dest_dir_fullpath = (
-        source_dir_fullpath.parent / f"{source_dir_name} # {random_index + 1}"
+        source_dir_fullpath.parent / f"{source_dir_name} # {random_dir_index + 1}"
     )
     dest_dir_fullpath.mkdir(exist_ok=True)
 
     shutil.move(file_fullpath, dest_dir_fullpath)
 
-    dir_lens[random_index] = dir_lens[random_index] - 1
+    artist_dir_lens[random_dir_index] = artist_dir_lens[random_dir_index] + 1
+    dir_lens[random_dir_index] = dir_lens[random_dir_index] - 1
