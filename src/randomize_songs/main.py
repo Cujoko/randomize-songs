@@ -1,23 +1,27 @@
 import math
 import random
 import shutil
-from argparse import ArgumentParser
 from pathlib import Path
 
 
-def run(source_dir_path: Path, files_portion_size: int):
-    source_dir_name = source_dir_path.stem
+def run(args):
+    source_dir_fullpath: Path = args.source_dir_path.absolute()
+    files_portion_size: int = args.files_portion_size
+
+    source_dir_name = source_dir_fullpath.stem
 
     for dest_dir_path in [
-        x for x in source_dir_path.parent.glob(f"{source_dir_name} # *") if x.is_dir()
+        x
+        for x in source_dir_fullpath.parent.glob(f"{source_dir_name} # *")
+        if x.is_dir()
     ]:
         for file_path in dest_dir_path.iterdir():
-            shutil.move(file_path, source_dir_path)
+            shutil.move(file_path, source_dir_fullpath)
 
         shutil.rmtree(dest_dir_path)
 
     file_paths = [
-        x for x in source_dir_path.iterdir() if x.is_file() and x.suffix == ".mp3"
+        x for x in source_dir_fullpath.iterdir() if x.is_file() and x.suffix == ".mp3"
     ]
 
     files_len = len(file_paths)
@@ -66,7 +70,7 @@ def run(source_dir_path: Path, files_portion_size: int):
         random_dir_index = random.choice(min_len_dir_indices)
 
         dest_dir_path = (
-            source_dir_path.parent / f"{source_dir_name} # {random_dir_index + 1}"
+            source_dir_fullpath.parent / f"{source_dir_name} # {random_dir_index + 1}"
         )
         dest_dir_path.mkdir(exist_ok=True)
 
@@ -74,29 +78,3 @@ def run(source_dir_path: Path, files_portion_size: int):
 
         artist_dir_lens[random_dir_index] = artist_dir_lens[random_dir_index] + 1
         dir_lens[random_dir_index] = dir_lens[random_dir_index] - 1
-
-
-def main():
-    parser = ArgumentParser(
-        add_help=False,
-    )
-    parser.add_argument(
-        "--dir",
-        default=Path.cwd(),
-        dest="source_dir_path",
-        type=Path,
-    )
-    parser.add_argument(
-        "-n",
-        default=255,
-        dest="files_portion_size",
-        type=int,
-    )
-
-    args = parser.parse_args()
-
-    run(args.source_dir_path, args.files_portion_size)
-
-
-if __name__ == "__main__":
-    main()
