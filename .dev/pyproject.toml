@@ -22,9 +22,8 @@ classifiers = [
 description = "Utility for randomizing songs"
 keywords = ["song", "music", "mp3"]
 name = "randomize-songs"
-readme = "README.md"
 requires-python = ">=3.10"
-version = "1.0.0"
+version = "0.1.0"
 
 [project.scripts]
 randomize-songs = "randomize_songs.__main__:run"
@@ -32,10 +31,13 @@ randomize-songs = "randomize_songs.__main__:run"
 [project.urls]
 repository = "https://github.com/Cujoko/randomize-songs"
 
+[tool.pdm.build]
+package-dir = "../src"
+
 [tool.pdm.scripts]
 test = "pytest"
 
 [tool.pytest.ini_options]
 addopts = "-q"
-pythonpath = ["src"]
-testpaths = ["tests"]
+pythonpath = ["../src"]
+testpaths = ["../tests"]
