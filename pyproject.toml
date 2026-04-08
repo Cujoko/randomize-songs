@@ -24,7 +24,7 @@ keywords = ["song", "music", "mp3"]
 name = "randomize-songs"
 readme = "README.md"
 requires-python = ">=3.10"
-version = "1.0.0"
+version = "1.0.1"
 
 [project.scripts]
 randomize-songs = "randomize_songs.__main__:run"
